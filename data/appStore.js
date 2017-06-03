@@ -1,7 +1,6 @@
 import { createStore, combineReducers, applyMiddleware } from 'redux';
-import thunk from 'redux-thunk';
-import checkinReducer from './reducers/checkinReducer.js';
-import habitReducer from './reducers/habitReducer.js';
+import checkinReducer from '../reducers/checkinReducer.js';
+import habitReducer from '../reducers/habitReducer.js';
 
 const reducer = combineReducers({
   habitData: habitReducer,
@@ -14,5 +13,5 @@ const reducer = combineReducers({
   @return {Object} A redux store
 */
 export default function storeCreator(initialState) {
-  return applyMiddleware(thunk)(createStore)(reducer, initialState);
+  return createStore(reducer, initialState);
 }

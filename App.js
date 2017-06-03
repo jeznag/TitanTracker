@@ -5,7 +5,7 @@
  */
 
 import HomeScreen from './Components/Home';
-import TrackScreen from './Components/Track';
+import TrackScreen from './Containers/Tracker';
 import ListHabitsScreen from './Components/admin/ViewHabits';
 import {
   AppRegistry,
@@ -15,24 +15,10 @@ import {
   StackNavigator,
 } from 'react-navigation';
 
-import createStore from './data/appStorage';
-import LocalStorageUtil from './data/localStorageUtil';
+const TitanTracker = StackNavigator({
+  Home: { screen: HomeScreen },
+  Track: { screen: TrackScreen },
+  // ListHabits: { screen: ListHabitsScreen }
+});
 
-async function setup() {
-  const habitData = await LocalStorageUtil.loadHabitDataFromStorage();
-  const checkinData = await LocalStorageUtil.loadCheckinDataFromStorage();
-  const appStore = createStore({
-    habitData,
-    checkinData,
-  });
-
-  const TitanTracker = StackNavigator({
-    Home: { screen: HomeScreen },
-    Track: { screen: TrackScreen },
-    ListHabits: { screen: ListHabitsScreen }
-  });
-
-  AppRegistry.registerComponent('HabitTracker', () => TitanTracker);
-}
-
-setup();
+AppRegistry.registerComponent('HabitTracker', () => TitanTracker);

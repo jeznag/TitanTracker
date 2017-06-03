@@ -9,6 +9,7 @@
   "dependencies": {
     "react": "16.0.0-alpha.6",
     "react-native": "0.44.0",
+    "react-native-check-box": "^1.0.4",
     "react-native-checkbox": "^1.1.0",
     "react-native-collapsible": "^0.8.0",
     "react-native-data-grid": "^1.1.0",

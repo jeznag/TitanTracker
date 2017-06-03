@@ -4,6 +4,9 @@
 @return  {Object}  The state after reducer operations
 */
 export default function reducer(state = {}, action) {
+  if (!action) {
+    return state;
+  }
   switch (action.type) {
     case 'CHECK_IN_HABIT':
       return handleCheckinHabit(state, action);
