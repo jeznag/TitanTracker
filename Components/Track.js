@@ -5,6 +5,7 @@ import Accordion from 'react-native-collapsible/Accordion';
 import NumberInput from './inputs/Number';
 import BooleanInput from './inputs/Boolean';
 import CheckInActionCreator from '../redux/action-creators/checkin';
+import { getDaysSince, timeBlocks, getRelevantTimeBlockIndexForCurrentTime } from '../utils/timeCalculations';
 
 const styles = StyleSheet.create({
   container: {
@@ -18,6 +19,7 @@ const styles = StyleSheet.create({
     paddingLeft: 20,
   },
   screenTitle: {
+    marginLeft: -25,
     fontSize: 22,
   },
   headerText: {
@@ -35,7 +37,6 @@ const styles = StyleSheet.create({
   },
 });
 
-const timeBlocks = ['morning', 'midday', 'afternoon', 'evening'];
 let lastBackgroundColourUpdate = {};
 
 function getHabitsForTimeBlock(habitData, timeBlock) {
@@ -47,18 +48,25 @@ function getHabitComponents(habits) {
 }
 
 function getHabitComponent(handleCheckin, habit) {
+  const daysSinceLastCheckin = getDaysSince(habit.lastCheckin);
+  let valueToSet = habit.lastCheckinValue;
+  if (daysSinceLastCheckin > 1) {
+    valueToSet = null;
+  }
   if (habit.type === 'number') {
     return (
       <NumberInput
         habit={habit}
         handleCheckin={handleCheckin}
         key={habit.habitID}
+        value={valueToSet}
       />
     );
   } else if (habit.type === 'boolean') {
     return (
       <BooleanInput
         key={habit.habitID}
+        checked={valueToSet}
         habit={habit}
         handleCheckin={handleCheckin}
       />
@@ -71,12 +79,10 @@ function getBackgroundColourForHabits(habits, timeBlock) {
     return lastBackgroundColourUpdate[timeBlock].lastStyle;
   }
 
-  const DAY_LENGTH = 24 * 60 * 60 * 1000;
-  console.log('checking total checkins');
   const totalDaysSinceGoodCheckin = habits.reduce((totalDays, habit) => {
-    console.log('habit ', habit.habitName, 'last checkin', habit.lastCheckin);
-    const daysSinceGoodCheckin = (new Date() - new Date(habit.lastCheckin)) / DAY_LENGTH;
-    if (isNaN(daysSinceGoodCheckin)) {
+    const isMaxValue = habit.lastCheckinValue === habit.valueForMaxScore;
+    const daysSinceGoodCheckin = getDaysSince(habit.lastCheckin);
+    if (daysSinceGoodCheckin === Infinity || !isMaxValue) {
       return totalDays + 2;
     }
     return totalDays + daysSinceGoodCheckin;
@@ -98,9 +104,15 @@ function getBackgroundColourForHabits(habits, timeBlock) {
   return lastBackgroundColourUpdate[timeBlock].lastStyle;
 }
 
+function getNumHabitsCompleted(habitsForThisTimeBlock) {
+  return habitsForThisTimeBlock.reduce((totalCorrect, habit) => {
+    return totalCorrect + (habit.valueForMaxScore === habit.lastCheckinValue);
+  }, 0);
+}
+
 function renderHeader(habitData, timeBlock) {
   const habitsForThisTimeBlock = getHabitsForTimeBlock(habitData, timeBlock);
-  const completedHabits = 0;
+  const completedHabits = getNumHabitsCompleted(habitsForThisTimeBlock);
   const heading = `${timeBlock} (${completedHabits} / ${habitsForThisTimeBlock.length})`;
   return (
     <View style={[styles.header, getBackgroundColourForHabits(habitsForThisTimeBlock, timeBlock)]}>
@@ -122,7 +134,9 @@ function getTimeBlocks(habitData, handleCheckin) {
   return (
     <Accordion
       sections={timeBlocks}
+      initiallyActiveSection={getRelevantTimeBlockIndexForCurrentTime()}
       renderHeader={renderHeader.bind(null, habitData)}
+      underlayColor="#fff"
       renderContent={renderAccordionContent.bind(
         null,
         habitData,
@@ -164,6 +178,7 @@ const mapDispatchToProps = dispatch => {
 const mapStateToProps = state => {
   return {
     habitData: state.habitData,
+    checkinData: state.checkinData,
     loading: state.asyncInitialState.loading,
   };
 };

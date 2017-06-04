@@ -38,12 +38,9 @@ export default class BooleanInput extends Component {
     return (
       <View>
         <CheckBox
-          checked={this.state.value}
           label={this.title}
+          checked={this.props.checked}
           onChange={(value) => {
-            this.setState({
-              value: !value
-            });
             this.props.handleCheckin(this.props.habit, !value);
           }}
         />

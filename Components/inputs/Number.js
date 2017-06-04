@@ -9,30 +9,20 @@ import {
 import Slider from 'react-native-slider';
 
 export default class NumberInput extends Component {
-  constructor() {
-    super();
-    this.state = {
-      value: 0,
-    };
-  }
-
   render() {
     return (
       <View>
         <Text>{this.props.habit.habitName} - how many {this.props.habit.units} did you do?</Text>
         <Slider
-          value={this.state.value}
           step={1}
           maximumValue={this.props.habit.valueForMaxScore}
+          value={this.props.value}
           onValueChange={(value) => {
-            this.setState({
-              value
-            });
             this.props.handleCheckin(this.props.habit, value);
           }}
           style={{ marginLeft: 0, marginRight: 30 }}
         />
-        <Text>{this.state.value}</Text>
+        <Text>{this.props.value}</Text>
       </View>
     );
   }

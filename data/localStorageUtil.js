@@ -1,8 +1,9 @@
-import {AppRegistry, AsyncStorage} from 'react-native';
+import {AsyncStorage} from 'react-native';
 import Storage from 'react-native-storage';
 
+const relevantStorageMethod = !!window ? window.localStorage : AsyncStorage;
 const storage = new Storage({
-  storageBackend: AsyncStorage,
+  storageBackend: relevantStorageMethod,
 
   // expire time, default 1 day(1000 * 3600 * 24 milliseconds).
   // can be null, which means never expire.
@@ -21,24 +22,39 @@ const KEY_FOR_HABIT_PACK_DATA = 'TitanTrackerHabitPackData';
 const KEY_FOR_CHECKIN_DATA = 'TitanTrackerCheckinData';
 
 export async function loadHabitDataFromStorage() {
-  const data = await storage.load({
-    key: KEY_FOR_HABIT_DATA,
-  });
-  return data;
+  try {
+    const data = await storage.load({
+      key: KEY_FOR_HABIT_DATA,
+    });
+    return data;
+  } catch (e) {
+    saveHabitDataInStorage([]);
+    return [];
+  }
 }
 
 export async function loadHabitPackDataFromStorage() {
-  const data = await storage.load({
-    key: KEY_FOR_HABIT_PACK_DATA,
-  });
-  return data;
+  try {
+    const data = await storage.load({
+      key: KEY_FOR_HABIT_PACK_DATA,
+    });
+    return data;
+  } catch (e) {
+    saveHabitPackDataInStorage([]);
+    return [];
+  }
 }
 
 export async function loadCheckinDataFromStorage() {
-  const data = await storage.load({
-    key: KEY_FOR_CHECKIN_DATA,
-  });
-  return data;
+  try {
+    const data = await storage.load({
+      key: KEY_FOR_CHECKIN_DATA,
+    });
+    return data;
+  } catch (e) {
+    saveCheckinDataInStorage([]);
+    return [];
+  }
 }
 
 async function saveHabitDataInStorage(newData) {

@@ -1,4 +1,5 @@
 import * as ActionTypes from '../ActionTypes';
+import { getDaysSince } from '../../utils/timeCalculations';
 
 /**
 @param  {Object}  state  The state prior to reduction
@@ -41,11 +42,10 @@ function handleAddOrEditHabit(state, action) {
 function handleCheckinHabit(state, action) {
   const clonedState = state.slice(0);
   const relevantHabit = clonedState.find((habit) => habit.habitID === action.value.habit.habitID);
-  const timeSinceLastCheckin = new Date() - new Date(relevantHabit.lastCheckin);
-  const DAY_LENGTH = 24 * 60 * 60 * 1000;
-  const daysSinceLastCheckin = timeSinceLastCheckin / DAY_LENGTH;
-  if (relevantHabit.valueForMaxScore === action.value.checkInValue && daysSinceLastCheckin > 1) {
+  const daysSinceLastCheckin = getDaysSince(relevantHabit.lastCheckin);
+  if (daysSinceLastCheckin > 1) {
     relevantHabit.lastCheckin = new Date();
   }
+  relevantHabit.lastCheckinValue = action.value.checkInValue;
   return clonedState;
 }
