@@ -36,14 +36,14 @@ export async function loadCheckinDataFromStorage() {
   return data;
 };
 
-export async function saveHabitDataInStorage(newData) {
+export function saveHabitDataInStorage(newData) {
   storage.save({
   	key: KEY_FOR_HABIT_DATA,
   	data: newData
   });
 };
 
-export async function saveCheckinDataInStorage(newData) {
+export function saveCheckinDataInStorage(newData) {
   storage.save({
   	key: KEY_FOR_CHECKIN_DATA,
   	data: newData
