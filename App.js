@@ -3,6 +3,7 @@ import React from 'react';
 import {StackNavigator} from 'react-navigation';
 import {AppRegistry} from 'react-native';
 import HomeScreen from './Components/Home';
+import HabitPacksScreen from './Components/HabitPacks';
 import TrackScreen from './Components/Track';
 import ListHabitsScreen from './Components/admin/ViewHabits';
 
@@ -12,6 +13,7 @@ const store = storeGenerator();
 
 const AppWithNavigationState = StackNavigator({
   Track: {screen: TrackScreen},
+  HabitPacks: {screen: HabitPacksScreen},
   // ListHabits: { screen: ListHabitsScreen }
 });
 

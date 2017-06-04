@@ -30,6 +30,7 @@ export default class NumberInput extends Component {
             });
             this.props.handleCheckin(this.props.habit, value);
           }}
+          style={{ marginLeft: 0, marginRight: 30 }}
         />
         <Text>{this.state.value}</Text>
       </View>

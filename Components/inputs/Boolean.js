@@ -9,7 +9,7 @@ import {
 } from 'react-native';
 
 export default class BooleanInput extends Component {
-  constructor() {
+  constructor(props) {
     super();
     this.state = {
       value: false,
@@ -32,16 +32,19 @@ export default class BooleanInput extends Component {
   }
 
   render() {
+    if (!this.title) {
+      this.title = this.getFunCompletionQuestion(this.props.habit.habitName);
+    }
     return (
       <View>
         <CheckBox
           checked={this.state.value}
-          label={this.getFunCompletionQuestion(this.props.habit.habitName)}
+          label={this.title}
           onChange={(value) => {
             this.setState({
               value: !value
             });
-            this.props.handleCheckin(this.props.habit, value);
+            this.props.handleCheckin(this.props.habit, !value);
           }}
         />
       </View>

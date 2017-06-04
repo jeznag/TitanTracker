@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {StyleSheet, Text, View, ListView} from 'react-native';
+import {StyleSheet, Text, Button, View} from 'react-native';
 import {connect} from 'react-redux';
 import Accordion from 'react-native-collapsible/Accordion';
 import NumberInput from './inputs/Number';
@@ -17,6 +17,9 @@ const styles = StyleSheet.create({
   accordionContent: {
     paddingLeft: 20,
   },
+  screenTitle: {
+    fontSize: 22,
+  },
   headerText: {
     fontSize: 20,
     margin: 10,
@@ -33,6 +36,7 @@ const styles = StyleSheet.create({
 });
 
 const timeBlocks = ['morning', 'midday', 'afternoon', 'evening'];
+let lastBackgroundColourUpdate = {};
 
 function getHabitsForTimeBlock(habitData, timeBlock) {
   return habitData.filter(habit => habit.timeBlock === timeBlock);
@@ -49,7 +53,6 @@ function getHabitComponent(handleCheckin, habit) {
         habit={habit}
         handleCheckin={handleCheckin}
         key={habit.habitID}
-        style={getBackgroundColourForHabits([habit])}
       />
     );
   } else if (habit.type === 'boolean') {
@@ -58,31 +61,41 @@ function getHabitComponent(handleCheckin, habit) {
         key={habit.habitID}
         habit={habit}
         handleCheckin={handleCheckin}
-        style={getBackgroundColourForHabits([habit])}
       />
     );
   }
 }
 
-function getBackgroundColourForHabits(habits) {
-  const consistentCheckinStyle = styles.consistentCheckin;
-  const somewhatInconsistentCheckinStyle = styles.inconsistentCheckin;
+function getBackgroundColourForHabits(habits, timeBlock) {
+  if (lastBackgroundColourUpdate[timeBlock] && (new Date() - lastBackgroundColourUpdate[timeBlock].lastTime) < 500) {
+    return lastBackgroundColourUpdate[timeBlock].lastStyle;
+  }
 
   const DAY_LENGTH = 24 * 60 * 60 * 1000;
+  console.log('checking total checkins');
   const totalDaysSinceGoodCheckin = habits.reduce((totalDays, habit) => {
+    console.log('habit ', habit.habitName, 'last checkin', habit.lastCheckin);
     const daysSinceGoodCheckin = (new Date() - new Date(habit.lastCheckin)) / DAY_LENGTH;
+    if (isNaN(daysSinceGoodCheckin)) {
+      return totalDays + 2;
+    }
     return totalDays + daysSinceGoodCheckin;
   }, 0);
 
+  lastBackgroundColourUpdate[timeBlock] = {
+    lastTime: new Date(),
+  };
+
   if (totalDaysSinceGoodCheckin === 0) {
-    return null;
+    lastBackgroundColourUpdate[timeBlock].lastStyle = null;
   } else if (totalDaysSinceGoodCheckin < 1) {
-    return styles.consistentCheckin;
+    lastBackgroundColourUpdate[timeBlock].lastStyle = styles.consistentCheckin;
   } else if (totalDaysSinceGoodCheckin < 5) {
-    return styles.somewhatInconsistentCheckin;
+    lastBackgroundColourUpdate[timeBlock].lastStyle = styles.somewhatInconsistentCheckin;
   } else {
-    return styles.reallyInconsistentCheckin;
+    lastBackgroundColourUpdate[timeBlock].lastStyle = styles.reallyInconsistentCheckin;
   }
+  return lastBackgroundColourUpdate[timeBlock].lastStyle;
 }
 
 function renderHeader(habitData, timeBlock) {
@@ -90,7 +103,7 @@ function renderHeader(habitData, timeBlock) {
   const completedHabits = 0;
   const heading = `${timeBlock} (${completedHabits} / ${habitsForThisTimeBlock.length})`;
   return (
-    <View style={[styles.header, getBackgroundColourForHabits(habitsForThisTimeBlock)]}>
+    <View style={[styles.header, getBackgroundColourForHabits(habitsForThisTimeBlock, timeBlock)]}>
       <Text style={styles.headerText}>{heading}</Text>
     </View>
   );
@@ -121,12 +134,20 @@ function getTimeBlocks(habitData, handleCheckin) {
 
 class TrackScreen extends Component {
   render() {
+    const { navigate } = this.props.navigation;
     if (this.props.loading) {
       return (<Text>Loading...</Text>);
     }
     return (
       <View style={styles.container}>
+        <Text style={styles.screenTitle}>
+          Titan Tracker - track your habits
+        </Text>
         {getTimeBlocks(this.props.habitData, this.props.handleCheckin)}
+        <Button
+          onPress={() => navigate('HabitPacks')}
+          title="Get more habits"
+        />
       </View>
     );
   }

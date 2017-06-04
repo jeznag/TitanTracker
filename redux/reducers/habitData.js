@@ -14,9 +14,22 @@ export default function reducer(state = [], action) {
       return handleAddOrEditHabit(state, action);
     case ActionTypes.CHECK_IN_HABIT:
       return handleCheckinHabit(state, action);
+    case ActionTypes.ADD_HABIT_PACK:
+      return handleAddHabitPack(state, action);
     default:
       return state;
   }
+}
+
+function handleAddHabitPack(state, action) {
+  const clonedState = state.slice(0);
+  const newHabitsToAdd = action.value.habits;
+  newHabitsToAdd.forEach((newHabit) => {
+    if (!clonedState.find((habit) => habit.habitID === newHabit.habitID)) {
+      clonedState.push(newHabit);
+    }
+  });
+  return clonedState;
 }
 
 function handleAddOrEditHabit(state, action) {
@@ -28,7 +41,10 @@ function handleAddOrEditHabit(state, action) {
 function handleCheckinHabit(state, action) {
   const clonedState = state.slice(0);
   const relevantHabit = clonedState.find((habit) => habit.habitID === action.value.habit.habitID);
-  if (relevantHabit.valueForMaxScore === action.value.checkInValue) {
+  const timeSinceLastCheckin = new Date() - new Date(relevantHabit.lastCheckin);
+  const DAY_LENGTH = 24 * 60 * 60 * 1000;
+  const daysSinceLastCheckin = timeSinceLastCheckin / DAY_LENGTH;
+  if (relevantHabit.valueForMaxScore === action.value.checkInValue && daysSinceLastCheckin > 1) {
     relevantHabit.lastCheckin = new Date();
   }
   return clonedState;

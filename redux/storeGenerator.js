@@ -9,12 +9,12 @@ async function loadStore(currentState) {
   try {
     const habitData = await LocalStorageUtil.loadHabitDataFromStorage();
     const checkinData = await LocalStorageUtil.loadCheckinDataFromStorage();
-    console.log('habitData', habitData);
-    console.log('checkinData', checkinData);
+    const habitPackData = await LocalStorageUtil.loadHabitPackDataFromStorage();
     return {
       ...currentState,
       habitData,
-      checkinData
+      checkinData,
+      habitPackData
     };
   } catch (e) {
     console.log(e);
