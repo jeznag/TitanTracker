@@ -38,11 +38,10 @@ export default class BooleanInput extends Component {
           checked={this.state.value}
           label={this.getFunCompletionQuestion(this.props.habit.habitName)}
           onChange={(value) => {
-            console.log('value', value);
             this.setState({
               value: !value
             });
-            console.log('CHANGED!!', value);
+            this.props.handleCheckin(this.props.habit, value);
           }}
         />
       </View>

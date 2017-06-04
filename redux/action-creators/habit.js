@@ -1,7 +1,9 @@
+import * as ActionTypes from '../ActionTypes';
+
 export default {
   addOrEditHabit(habitData) {
     return {
-      type: 'ADD_OR_EDIT_HABIT',
+      type: ActionTypes.ADD_OR_EDIT_HABIT,
       value: habitData
     };
   }

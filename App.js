@@ -6,12 +6,11 @@ import HomeScreen from './Components/Home';
 import TrackScreen from './Components/Track';
 import ListHabitsScreen from './Components/admin/ViewHabits';
 
-import storeCreator from './data/appStore';
+import storeGenerator from './redux/storeGenerator';
 
-const store = storeCreator();
+const store = storeGenerator();
 
 const AppWithNavigationState = StackNavigator({
-  Home: {screen: HomeScreen},
   Track: {screen: TrackScreen},
   // ListHabits: { screen: ListHabitsScreen }
 });

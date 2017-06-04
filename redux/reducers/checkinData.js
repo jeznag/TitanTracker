@@ -1,3 +1,5 @@
+import * as ActionTypes from '../ActionTypes';
+
 /**
 @param  {Object}  state  The state prior to reduction
 @param  {Object}  action  The reducer action
@@ -8,7 +10,7 @@ export default function reducer(state = {}, action) {
     return state;
   }
   switch (action.type) {
-    case 'CHECK_IN_HABIT':
+    case ActionTypes.CHECK_IN_HABIT:
       return handleCheckinHabit(state, action);
     default:
       return state;
@@ -18,13 +20,14 @@ export default function reducer(state = {}, action) {
 function handleCheckinHabit(state, action) {
   const clonedState = Object.assign({}, state);
 
-  if (!clonedState[action.value.habitName]) {
-    clonedState[action.value.habitName] = {
+  if (!clonedState[action.value.habit.habitID]) {
+    clonedState[action.value.habit.habitID] = {
       checkins: []
     };
   }
-  clonedState[action.value.habitName].lastCheckinTime = action.value.checkinTime;
-  clonedState[action.value.habitName].lastCheckinValue = action.value.checkinValue;
-  clonedState[action.value.habitName].checkins.push(action.value);
+  clonedState[action.value.habit.habitID].checkins.push({
+    value: action.value.checkInValue,
+    time: new Date(),
+  });
   return clonedState;
 }

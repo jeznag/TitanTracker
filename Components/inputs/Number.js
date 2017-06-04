@@ -28,7 +28,7 @@ export default class NumberInput extends Component {
             this.setState({
               value
             });
-            console.log('CHANGED!!', value);
+            this.props.handleCheckin(this.props.habit, value);
           }}
         />
         <Text>{this.state.value}</Text>
