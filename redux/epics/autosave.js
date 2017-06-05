@@ -18,23 +18,32 @@ const indirect = {
  * Debounced to stop it from DOSing the backend.
  */
 export default function autoSave(action$, store, call = indirect.call) {
-  return action$.ofType(ActionTypes.CHECK_IN_HABIT, ActionTypes.ADD_HABIT_PACK).debounceTime(2000).mergeMap(() => {
-    const storeState = store.getState();
-    const habitData = storeState.habitData;
-    const checkinData = storeState.checkinData;
-    const habitPackData = storeState.habitPackData;
-    const saveResponse = Observable.fromPromise(call(saveCheckInAndHabitData, checkinData, habitData, habitPackData));
-    return saveResponse
-      .map(response => ({
-        type: ActionTypes.SAVED_DATA,
-        value: response,
-      }))
-      .catch(error =>
-        Observable.of({
-          type: ActionTypes.SAVE_FAILED,
-          value: error.xhr.response,
-          error: true,
-        })
+  return action$
+    .ofType(
+      ActionTypes.CHECK_IN_HABIT,
+      ActionTypes.ADD_HABIT_PACK,
+      ActionTypes.UPDATE_AVAILABLE_HABIT_PACKS
+    )
+    .debounceTime(2000)
+    .mergeMap(() => {
+      const storeState = store.getState();
+      const habitData = storeState.habitData;
+      const checkinData = storeState.checkinData;
+      const habitPackData = storeState.habitPackData;
+      const saveResponse = Observable.fromPromise(
+        call(saveCheckInAndHabitData, checkinData, habitData, habitPackData)
       );
-  });
+      return saveResponse
+        .map(response => ({
+          type: ActionTypes.SAVED_DATA,
+          value: response,
+        }))
+        .catch(error =>
+          Observable.of({
+            type: ActionTypes.SAVE_FAILED,
+            value: error.xhr.response,
+            error: true,
+          })
+        );
+    });
 }

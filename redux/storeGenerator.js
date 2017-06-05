@@ -3,18 +3,20 @@ import * as asyncInitialState from 'redux-async-initial-state';
 import { combineEpics, createEpicMiddleware } from 'redux-observable';
 import reducers from './reducers';
 import autoSaveEpic from './epics/autosave';
+import loadAvailableHabitPacksEpic from './epics/loadAvailableHabitPacks';
 import * as LocalStorageUtil from '../data/localStorageUtil';
 
 async function loadStore(currentState) {
   try {
     const habitData = await LocalStorageUtil.loadHabitDataFromStorage();
     const checkinData = await LocalStorageUtil.loadCheckinDataFromStorage();
-    const habitPackData = await LocalStorageUtil.loadHabitPackDataFromStorage();
+    const storedHabitPackData = await LocalStorageUtil.loadHabitPackDataFromStorage();
+
     return {
       ...currentState,
       habitData,
       checkinData,
-      habitPackData
+      habitPackData: storedHabitPackData,
     };
   } catch (e) {
     console.log(e);
@@ -22,7 +24,8 @@ async function loadStore(currentState) {
 }
 
 const rootEpic = combineEpics(
-  autoSaveEpic
+  autoSaveEpic,
+  loadAvailableHabitPacksEpic
 );
 const epicMiddleware = createEpicMiddleware(rootEpic);
 

@@ -40,8 +40,14 @@ export async function loadHabitPackDataFromStorage() {
     });
     return data;
   } catch (e) {
-    saveHabitPackDataInStorage([]);
-    return [];
+    saveHabitPackDataInStorage({
+      installedHabitPacks: [],
+      availableHabitPacks: []
+    });
+    return {
+      installedHabitPacks: [],
+      availableHabitPacks: []
+    };
   }
 }
 
@@ -64,16 +70,16 @@ async function saveHabitDataInStorage(newData) {
   });
 }
 
-async function saveHabitPackDataInStorage(newData) {
+async function saveCheckinDataInStorage(newData) {
   await storage.save({
-    key: KEY_FOR_HABIT_PACK_DATA,
+    key: KEY_FOR_CHECKIN_DATA,
     data: newData,
   });
 }
 
-async function saveCheckinDataInStorage(newData) {
+async function saveHabitPackDataInStorage(newData) {
   await storage.save({
-    key: KEY_FOR_CHECKIN_DATA,
+    key: KEY_FOR_HABIT_PACK_DATA,
     data: newData,
   });
 }

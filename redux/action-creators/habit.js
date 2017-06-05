@@ -8,7 +8,6 @@ export default {
     };
   },
   addHabitPack(habitPack) {
-    console.log('adding habit pack', habitPack);
     return {
       type: ActionTypes.ADD_HABIT_PACK,
       value: habitPack,
