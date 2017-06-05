@@ -11,7 +11,7 @@ import Slider from 'react-native-slider';
 export default class NumberInput extends Component {
   render() {
     return (
-      <View>
+      <View style={{backgroundColor: this.props.backgroundColor}}>
         <Text>{this.props.habit.habitName} - how many {this.props.habit.units} did you do?</Text>
         <Slider
           step={1}
@@ -22,7 +22,7 @@ export default class NumberInput extends Component {
           }}
           style={{ marginLeft: 0, marginRight: 30 }}
         />
-        <Text>{this.props.value}</Text>
+        <Text style={{ textAlign: 'center' }}>{this.props.value}</Text>
       </View>
     );
   }

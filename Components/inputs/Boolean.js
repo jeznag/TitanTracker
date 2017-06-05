@@ -36,7 +36,7 @@ export default class BooleanInput extends Component {
       this.title = this.getFunCompletionQuestion(this.props.habit.habitName);
     }
     return (
-      <View>
+      <View style={{backgroundColor: this.props.backgroundColor}}>
         <CheckBox
           label={this.title}
           checked={this.props.checked}

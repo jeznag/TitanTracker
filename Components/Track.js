@@ -43,35 +43,10 @@ function getHabitsForTimeBlock(habitData, timeBlock) {
   return habitData.filter(habit => habit.timeBlock === timeBlock);
 }
 
-function getHabitComponents(habits) {
-  return habits.map(getHabitComponent);
-}
-
-function getHabitComponent(handleCheckin, habit) {
-  const daysSinceLastCheckin = getDaysSince(habit.lastCheckin);
-  let valueToSet = habit.lastCheckinValue;
-  if (daysSinceLastCheckin > 1) {
-    valueToSet = null;
-  }
-  if (habit.type === 'number') {
-    return (
-      <NumberInput
-        habit={habit}
-        handleCheckin={handleCheckin}
-        key={habit.habitID}
-        value={valueToSet}
-      />
-    );
-  } else if (habit.type === 'boolean') {
-    return (
-      <BooleanInput
-        key={habit.habitID}
-        checked={valueToSet}
-        habit={habit}
-        handleCheckin={handleCheckin}
-      />
-    );
-  }
+function getNumHabitsCompleted(habitsForThisTimeBlock) {
+  return habitsForThisTimeBlock.reduce((totalCorrect, habit) => {
+    return totalCorrect + (habit.valueForMaxScore === habit.lastCheckinValue);
+  }, 0);
 }
 
 function getBackgroundColourForHabits(habits, timeBlock) {
@@ -104,49 +79,77 @@ function getBackgroundColourForHabits(habits, timeBlock) {
   return lastBackgroundColourUpdate[timeBlock].lastStyle;
 }
 
-function getNumHabitsCompleted(habitsForThisTimeBlock) {
-  return habitsForThisTimeBlock.reduce((totalCorrect, habit) => {
-    return totalCorrect + (habit.valueForMaxScore === habit.lastCheckinValue);
-  }, 0);
-}
-
-function renderHeader(habitData, timeBlock) {
-  const habitsForThisTimeBlock = getHabitsForTimeBlock(habitData, timeBlock);
-  const completedHabits = getNumHabitsCompleted(habitsForThisTimeBlock);
-  const heading = `${timeBlock} (${completedHabits} / ${habitsForThisTimeBlock.length})`;
-  return (
-    <View style={[styles.header, getBackgroundColourForHabits(habitsForThisTimeBlock, timeBlock)]}>
-      <Text style={styles.headerText}>{heading}</Text>
-    </View>
-  );
-}
-
-function renderAccordionContent(habitData, handleCheckin, timeBlock) {
-  const habitsForThisTimeBlock = getHabitsForTimeBlock(habitData, timeBlock);
-  return (
-    <View style={styles.header}>
-      {habitsForThisTimeBlock.map(getHabitComponent.bind(null, handleCheckin))}
-    </View>
-  );
-}
-
-function getTimeBlocks(habitData, handleCheckin) {
-  return (
-    <Accordion
-      sections={timeBlocks}
-      initiallyActiveSection={getRelevantTimeBlockIndexForCurrentTime()}
-      renderHeader={renderHeader.bind(null, habitData)}
-      underlayColor="#fff"
-      renderContent={renderAccordionContent.bind(
-        null,
-        habitData,
-        handleCheckin
-      )}
-    />
-  );
-}
-
 class TrackScreen extends Component {
+
+  constructor() {
+    super();
+    this.getHabitComponent = this.getHabitComponent.bind(this);
+    this.renderHeader = this.renderHeader.bind(this);
+    this.renderAccordionContent = this.renderAccordionContent.bind(this);
+    this.getTimeBlocks = this.getTimeBlocks.bind(this);
+  }
+
+  getHabitComponent(habit) {
+    const daysSinceLastCheckin = getDaysSince(habit.lastCheckin);
+    let valueToSet = habit.lastCheckinValue;
+    if (daysSinceLastCheckin > 1) {
+      valueToSet = null;
+    }
+    if (habit.type === 'number') {
+      return (
+        <NumberInput
+          habit={habit}
+          handleCheckin={this.props.handleCheckin}
+          key={habit.habitID}
+          value={valueToSet}
+          backgroundColor="white"
+        />
+      );
+    } else if (habit.type === 'boolean') {
+      return (
+        <BooleanInput
+          key={habit.habitID}
+          checked={valueToSet}
+          habit={habit}
+          handleCheckin={this.props.handleCheckin}
+          backgroundColor="white"
+        />
+      );
+    }
+  }
+
+  renderHeader(timeBlock) {
+    const habitsForThisTimeBlock = getHabitsForTimeBlock(this.props.habitData, timeBlock);
+    const completedHabits = getNumHabitsCompleted(habitsForThisTimeBlock);
+    const heading = `${timeBlock} (${completedHabits} / ${habitsForThisTimeBlock.length})`;
+    return (
+      <View style={[styles.header, getBackgroundColourForHabits(habitsForThisTimeBlock, timeBlock)]}>
+        <Text style={styles.headerText}>{heading}</Text>
+      </View>
+    );
+  }
+
+  renderAccordionContent(timeBlock) {
+    const habitsForThisTimeBlock = getHabitsForTimeBlock(this.props.habitData, timeBlock);
+    return (
+      <View style={styles.header}>
+        {habitsForThisTimeBlock.map(this.getHabitComponent)}
+      </View>
+    );
+  }
+
+  getTimeBlocks() {
+    return (
+      <Accordion
+        sections={timeBlocks}
+        initiallyActiveSection={getRelevantTimeBlockIndexForCurrentTime()}
+        renderHeader={this.renderHeader}
+        underlayColor="#fff"
+        renderContent={this.renderAccordionContent}
+      />
+    );
+  }
+
   render() {
     const { navigate } = this.props.navigation;
     if (this.props.loading) {
@@ -157,7 +160,7 @@ class TrackScreen extends Component {
         <Text style={styles.screenTitle}>
           Titan Tracker - track your habits
         </Text>
-        {getTimeBlocks(this.props.habitData, this.props.handleCheckin)}
+        {this.getTimeBlocks()}
         <Button
           onPress={() => navigate('HabitPacks')}
           title="Get more habits"
