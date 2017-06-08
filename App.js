@@ -5,6 +5,7 @@ import {AppRegistry, Platform} from 'react-native';
 import HomeScreen from './Components/Home';
 import HabitPacksScreen from './Components/HabitPacks';
 import TrackScreen from './Components/Track';
+import CheckinReportScreen from './Components/CheckinReport';
 import ListHabitsScreen from './Components/admin/ViewHabits';
 
 import storeGenerator from './redux/storeGenerator';
@@ -12,13 +13,17 @@ import storeGenerator from './redux/storeGenerator';
 const store = storeGenerator();
 
 const AppWithNavigationState = TabNavigator({
-  Track: {
+  'Track': {
     screen: TrackScreen,
     path: '',
   },
-  HabitPacks: {
+  'Get more habits': {
     screen: HabitPacksScreen,
     path: 'packs',
+  },
+  'See your progress': {
+    screen: CheckinReportScreen,
+    path: 'checkinreport',
   },
 });
 

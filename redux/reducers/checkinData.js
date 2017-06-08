@@ -12,9 +12,25 @@ export default function reducer(state = {}, action) {
   switch (action.type) {
     case ActionTypes.CHECK_IN_HABIT:
       return handleCheckinHabit(state, action);
+    case ActionTypes.ADD_HABIT_PACK:
+      return handleAddHabitPack(state, action);
     default:
       return state;
   }
+}
+
+function handleAddHabitPack(state, action) {
+  const clonedState = Object.assign({}, state);
+  const newHabitsToAdd = action.value.habits;
+  newHabitsToAdd.forEach((newHabit) => {
+    if (!Object.keys(clonedState).find((habitID) => habitID === newHabit.habitID)) {
+      clonedState[newHabit.habitID] = {
+        checkins: [],
+        habitStarted: new Date(),
+      };
+    }
+  });
+  return clonedState;
 }
 
 function handleCheckinHabit(state, action) {
@@ -22,7 +38,8 @@ function handleCheckinHabit(state, action) {
 
   if (!clonedState[action.value.habit.habitID]) {
     clonedState[action.value.habit.habitID] = {
-      checkins: []
+      checkins: [],
+      habitStarted: new Date(),
     };
   }
   clonedState[action.value.habit.habitID].checkins.push({

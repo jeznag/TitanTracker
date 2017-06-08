@@ -102,7 +102,6 @@ class TrackScreen extends Component {
           handleCheckin={this.props.handleCheckin}
           key={habit.habitID}
           value={valueToSet}
-          backgroundColor="white"
         />
       );
     } else if (habit.type === 'boolean') {
@@ -112,7 +111,6 @@ class TrackScreen extends Component {
           checked={valueToSet}
           habit={habit}
           handleCheckin={this.props.handleCheckin}
-          backgroundColor="white"
         />
       );
     }
@@ -161,10 +159,6 @@ class TrackScreen extends Component {
           Titan Tracker - track your habits
         </Text>
         {this.getTimeBlocks()}
-        <Button
-          onPress={() => navigate('HabitPacks')}
-          title="Get more habits"
-        />
       </View>
     );
   }

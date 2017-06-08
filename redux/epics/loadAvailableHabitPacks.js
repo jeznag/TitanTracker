@@ -20,7 +20,7 @@ export default function getHabitPacksFromServer(
     .ofType('redux-async-initial-state/STATE_LOADING_DONE')
     .mergeMap(action => {
       return ajax
-        .getJSON('http://localhost:3013/habitPacks')
+        .getJSON('https://titantracker.herokuapp.com/habitPacks')
         .map(response => ({
           type: ActionTypes.UPDATE_AVAILABLE_HABIT_PACKS,
           value: response,

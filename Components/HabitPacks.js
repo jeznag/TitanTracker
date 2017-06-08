@@ -36,11 +36,6 @@ class HabitPacksScreen extends Component {
             disabled={!!this.props.installedHabitPacks.find((habitPackWeAlreadyHave) => habitPackWeAlreadyHave.packID === habitPack.packID)}
           />
         ))}
-        <Button
-          onPress={() => navigate('Track')}
-          title="Start Tracking Again"
-          style={styles.track}
-        />
       </View>
     );
   }
